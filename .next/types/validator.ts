@@ -36,10 +36,40 @@ type LayoutConfig<Route extends LayoutRoutes = LayoutRoutes> = {
 }
 
 
+// Validate ../../app/league/[league_id]/matchup/[week]/[matchup_id]/page.tsx
+{
+  const handler = {} as typeof import("../../app/league/[league_id]/matchup/[week]/[matchup_id]/page.js")
+  handler satisfies AppPageConfig<"/league/[league_id]/matchup/[week]/[matchup_id]">
+}
+
+// Validate ../../app/league/[league_id]/matchups/[week]/page.tsx
+{
+  const handler = {} as typeof import("../../app/league/[league_id]/matchups/[week]/page.js")
+  handler satisfies AppPageConfig<"/league/[league_id]/matchups/[week]">
+}
+
+// Validate ../../app/league/[league_id]/matchups/page.tsx
+{
+  const handler = {} as typeof import("../../app/league/[league_id]/matchups/page.js")
+  handler satisfies AppPageConfig<"/league/[league_id]/matchups">
+}
+
+// Validate ../../app/league/[league_id]/page.tsx
+{
+  const handler = {} as typeof import("../../app/league/[league_id]/page.js")
+  handler satisfies AppPageConfig<"/league/[league_id]">
+}
+
 // Validate ../../app/page.tsx
 {
   const handler = {} as typeof import("../../app/page.js")
   handler satisfies AppPageConfig<"/">
+}
+
+// Validate ../../app/user/[username]/page.tsx
+{
+  const handler = {} as typeof import("../../app/user/[username]/page.js")
+  handler satisfies AppPageConfig<"/user/[username]">
 }
 
 

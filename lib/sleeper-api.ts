@@ -16,7 +16,7 @@ export class SleeperAPI {
     }
   }
 
-  static async getUserLeagues(userId: string, season: string = '2024'): Promise<SleeperLeague[]> {
+  static async getUserLeagues(userId: string, season: string = '2025'): Promise<SleeperLeague[]> {
     try {
       const response = await fetch(`${BASE_URL}/user/${userId}/leagues/nfl/${season}`)
       if (!response.ok) {
@@ -77,6 +77,32 @@ export class SleeperAPI {
       return await response.json()
     } catch (error) {
       console.error('Error fetching NFL state:', error)
+      return null
+    }
+  }
+
+  static async getNFLPlayers(): Promise<Record<string, any> | null> {
+    try {
+      const response = await fetch(`${BASE_URL}/players/nfl`)
+      if (!response.ok) {
+        return null
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Error fetching NFL players:', error)
+      return null
+    }
+  }
+
+  static async getLeague(leagueId: string): Promise<SleeperLeague | null> {
+    try {
+      const response = await fetch(`${BASE_URL}/league/${leagueId}`)
+      if (!response.ok) {
+        return null
+      }
+      return await response.json()
+    } catch (error) {
+      console.error('Error fetching league info:', error)
       return null
     }
   }

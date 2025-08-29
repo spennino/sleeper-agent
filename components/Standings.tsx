@@ -1,14 +1,18 @@
 'use client'
 
+import { useState } from 'react'
 import Image from 'next/image'
 import { SleeperRoster, SleeperUser } from '@/types/sleeper'
+import RosterView from './RosterView'
 
 interface StandingsProps {
   rosters: SleeperRoster[]
   users: SleeperUser[]
+  players: Record<string, any>
 }
 
-export default function Standings({ rosters, users }: StandingsProps) {
+export default function Standings({ rosters, users, players }: StandingsProps) {
+  const [selectedRoster, setSelectedRoster] = useState<SleeperRoster | null>(null)
   const getUserByOwnerId = (ownerId: string) => {
     return users.find(user => user.user_id === ownerId)
   }
@@ -22,12 +26,26 @@ export default function Standings({ rosters, users }: StandingsProps) {
     return (b.settings.fpts + (b.settings.fpts_decimal / 100)) - (a.settings.fpts + (a.settings.fpts_decimal / 100))
   })
 
+  const handleRowClick = (roster: SleeperRoster) => {
+    setSelectedRoster(roster)
+  }
+
+  const handleCloseRoster = () => {
+    setSelectedRoster(null)
+  }
+
   return (
     <div className="mb-8">
       <h2 className="text-2xl font-bold mb-4">Standings</h2>
-      <div className="bg-gray-800 rounded-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full">
+      <div className="flex gap-6">
+        {/* Standings Table */}
+        <div 
+          className={`bg-gray-800 rounded-lg overflow-hidden transition-all duration-300 ${
+            selectedRoster ? 'w-2/3' : 'w-full'
+          }`}
+        >
+          <div className="overflow-x-auto">
+            <table className="w-full">
             <thead className="bg-gray-700">
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-300">#</th>
@@ -45,11 +63,17 @@ export default function Standings({ rosters, users }: StandingsProps) {
                 const user = getUserByOwnerId(roster.owner_id)
                 const totalGames = roster.settings.wins + roster.settings.losses + roster.settings.ties
                 const winPct = totalGames > 0 ? (roster.settings.wins / totalGames * 100).toFixed(1) : '0.0'
-                const pointsFor = (roster.settings.fpts + (roster.settings.fpts_decimal / 100)).toFixed(2)
-                const pointsAgainst = (roster.settings.fpts_against + (roster.settings.fpts_against_decimal / 100)).toFixed(2)
+                const pointsFor = ((roster.settings.fpts || 0) + ((roster.settings.fpts_decimal || 0) / 100)).toFixed(2)
+                const pointsAgainst = ((roster.settings.fpts_against || 0) + ((roster.settings.fpts_against_decimal || 0) / 100)).toFixed(2)
                 
                 return (
-                  <tr key={roster.roster_id} className="hover:bg-gray-750">
+                  <tr 
+                    key={roster.roster_id} 
+                    onClick={() => handleRowClick(roster)}
+                    className={`hover:bg-gray-750 cursor-pointer transition-colors ${
+                      selectedRoster?.roster_id === roster.roster_id ? 'bg-blue-900' : ''
+                    }`}
+                  >
                     <td className="px-4 py-3 text-sm font-medium">{index + 1}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center">
@@ -62,9 +86,16 @@ export default function Standings({ rosters, users }: StandingsProps) {
                             className="w-8 h-8 rounded-full mr-3"
                           />
                         )}
-                        <span className="text-sm font-medium">
-                          {user?.display_name || user?.username || 'Unknown'}
-                        </span>
+                        <div>
+                          <div className="text-sm font-medium">
+                            {(user as any)?.metadata?.team_name || user?.display_name || user?.username || 'Unknown'}
+                          </div>
+                          {(user as any)?.metadata?.team_name && (
+                            <div className="text-xs text-gray-400">
+                              {user?.display_name || user?.username}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-center text-sm">{roster.settings.wins}</td>
@@ -79,6 +110,19 @@ export default function Standings({ rosters, users }: StandingsProps) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Roster View Sidebar */}
+      {selectedRoster && (
+        <div className="w-1/3 animate-slide-in-right">
+          <RosterView
+            roster={selectedRoster}
+            user={getUserByOwnerId(selectedRoster.owner_id)!}
+            players={players}
+            onClose={handleCloseRoster}
+          />
+        </div>
+      )}
       </div>
     </div>
   )

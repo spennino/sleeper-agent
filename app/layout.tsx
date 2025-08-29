@@ -7,6 +7,9 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'Sleeper Agent',
   description: 'Fantasy football league tracker powered by Sleeper API',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({

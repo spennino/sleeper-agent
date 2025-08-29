@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['sleepercdn.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'sleepercdn.com',
+        port: '',
+        pathname: '/avatars/**',
+      },
+    ],
   },
 }
 

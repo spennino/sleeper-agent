@@ -5,10 +5,11 @@ import { SleeperAPI } from '@/lib/sleeper-api'
 import { SleeperUser, SleeperLeague } from '@/types/sleeper'
 
 interface UsernameInputProps {
-  onUserLoaded: (user: SleeperUser, leagues: SleeperLeague[]) => void
+  onUserLoaded: (user: SleeperUser) => void
+  currentSeason?: string
 }
 
-export default function UsernameInput({ onUserLoaded }: UsernameInputProps) {
+export default function UsernameInput({ onUserLoaded, currentSeason = '2025' }: UsernameInputProps) {
   const [username, setUsername] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
@@ -18,9 +19,10 @@ export default function UsernameInput({ onUserLoaded }: UsernameInputProps) {
     const saved = localStorage.getItem('sleeper_username')
     if (saved) {
       setSavedUsername(saved)
+      // Auto-load with current season
       handleSubmit(null, saved)
     }
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentSeason]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (e: React.FormEvent | null, usernameToUse?: string) => {
     if (e) e.preventDefault()
@@ -41,11 +43,9 @@ export default function UsernameInput({ onUserLoaded }: UsernameInputProps) {
         return
       }
 
-      const leagues = await SleeperAPI.getUserLeagues(user.user_id)
-      
       localStorage.setItem('sleeper_username', usernameValue)
       setSavedUsername(usernameValue)
-      onUserLoaded(user, leagues)
+      onUserLoaded(user)
     } catch (error) {
       setError('Failed to load user data. Please try again.')
     } finally {

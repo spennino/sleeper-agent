@@ -71,4 +71,14 @@ export interface SleeperPlayer {
   position: string
   team: string
   status: string
+  fantasy_positions: string[]
+  number: number
+  depth_chart_position: number
+  height: string
+  weight: string
+  age: number
+  birth_date: string
+  college: string
+  sport: string
+  injury_status: string
 }

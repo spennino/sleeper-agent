@@ -65,9 +65,16 @@ export default function Matchups({ matchups, rosters, users, week, onMatchupClic
                         className="w-8 h-8 rounded-full mr-3"
                       />
                     )}
-                    <span className="font-medium">
-                      {user1?.display_name || user1?.username || 'Unknown'}
-                    </span>
+                    <div>
+                      <div className="font-medium">
+                        {(user1 as any)?.metadata?.team_name || user1?.display_name || user1?.username || 'Unknown'}
+                      </div>
+                      {(user1 as any)?.metadata?.team_name && (
+                        <div className="text-xs text-gray-400">
+                          {user1?.display_name || user1?.username}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <p className="text-2xl font-bold">{team1.points.toFixed(2)}</p>
                   <p className="text-sm text-gray-400">BYE WEEK</p>
@@ -98,9 +105,16 @@ export default function Matchups({ matchups, rosters, users, week, onMatchupClic
                         className="w-8 h-8 rounded-full mr-3"
                       />
                     )}
-                    <span className="font-medium">
-                      {user1?.display_name || user1?.username || 'Unknown'}
-                    </span>
+                    <div>
+                      <div className="font-medium">
+                        {(user1 as any)?.metadata?.team_name || user1?.display_name || user1?.username || 'Unknown'}
+                      </div>
+                      {(user1 as any)?.metadata?.team_name && (
+                        <div className="text-xs text-gray-400">
+                          {user1?.display_name || user1?.username}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className={`flex items-center ${winner?.roster_id === team2.roster_id ? 'text-green-400' : ''}`}>
                     {user2?.avatar && (
@@ -112,9 +126,16 @@ export default function Matchups({ matchups, rosters, users, week, onMatchupClic
                         className="w-8 h-8 rounded-full mr-3"
                       />
                     )}
-                    <span className="font-medium">
-                      {user2?.display_name || user2?.username || 'Unknown'}
-                    </span>
+                    <div>
+                      <div className="font-medium">
+                        {(user2 as any)?.metadata?.team_name || user2?.display_name || user2?.username || 'Unknown'}
+                      </div>
+                      {(user2 as any)?.metadata?.team_name && (
+                        <div className="text-xs text-gray-400">
+                          {user2?.display_name || user2?.username}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="text-right">
