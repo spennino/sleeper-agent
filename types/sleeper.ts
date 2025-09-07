@@ -27,6 +27,7 @@ export interface SleeperLeague {
     squads: number
     teams: number
     map_id: number
+    best_ball?: number // 1 for best ball leagues, undefined for regular leagues
   }
   scoring_settings: Record<string, number>
   roster_positions: string[]

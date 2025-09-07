@@ -1,24 +1,35 @@
 'use client'
 
 import Image from 'next/image'
-import { SleeperMatchup, SleeperRoster, SleeperUser } from '@/types/sleeper'
+import { SleeperMatchup, SleeperRoster, SleeperUser, SleeperLeague } from '@/types/sleeper'
+import { createBestBallMatchup } from '@/lib/best-ball'
 
 interface MatchupsProps {
   matchups: SleeperMatchup[]
   rosters: SleeperRoster[]
   users: SleeperUser[]
   week: number
+  league: SleeperLeague | null
+  players: Record<string, any>
+  currentWeek?: number
   onMatchupClick: (matchupId: number) => void
 }
 
-export default function Matchups({ matchups, rosters, users, week, onMatchupClick }: MatchupsProps) {
+export default function Matchups({ matchups, rosters, users, week, league, players, currentWeek, onMatchupClick }: MatchupsProps) {
+  // Apply best ball logic if this is a best ball league
+  const processedMatchups = matchups.map(matchup => 
+    createBestBallMatchup(matchup, players, league)
+  )
   const getUserByRosterId = (rosterId: number) => {
     const roster = rosters.find(r => r.roster_id === rosterId)
     if (!roster) return null
     return users.find(user => user.user_id === roster.owner_id)
   }
 
-  const groupedMatchups = matchups.reduce((acc, matchup) => {
+  // Determine if matchups are completed
+  const areMatchupsComplete = currentWeek ? week < currentWeek : false
+
+  const groupedMatchups = processedMatchups.reduce((acc, matchup) => {
     if (!acc[matchup.matchup_id]) {
       acc[matchup.matchup_id] = []
     }
@@ -31,7 +42,7 @@ export default function Matchups({ matchups, rosters, users, week, onMatchupClic
     return sorted
   })
 
-  if (matchups.length === 0) {
+  if (processedMatchups.length === 0) {
     return (
       <div className="text-center text-gray-400">
         No matchups found for week {week}.
@@ -95,7 +106,7 @@ export default function Matchups({ matchups, rosters, users, week, onMatchupClic
             >
               <div className="flex justify-between items-center">
                 <div className="flex-1">
-                  <div className={`flex items-center mb-2 ${winner?.roster_id === team1.roster_id ? 'text-green-400' : ''}`}>
+                  <div className={`flex items-center mb-2 ${winner?.roster_id === team1.roster_id && areMatchupsComplete ? 'text-green-400' : ''}`}>
                     {user1?.avatar && (
                       <Image
                         src={`https://sleepercdn.com/avatars/${user1.avatar}`}
@@ -116,7 +127,7 @@ export default function Matchups({ matchups, rosters, users, week, onMatchupClic
                       )}
                     </div>
                   </div>
-                  <div className={`flex items-center ${winner?.roster_id === team2.roster_id ? 'text-green-400' : ''}`}>
+                  <div className={`flex items-center ${winner?.roster_id === team2.roster_id && areMatchupsComplete ? 'text-green-400' : ''}`}>
                     {user2?.avatar && (
                       <Image
                         src={`https://sleepercdn.com/avatars/${user2.avatar}`}
@@ -139,10 +150,10 @@ export default function Matchups({ matchups, rosters, users, week, onMatchupClic
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className={`text-lg font-bold mb-1 ${winner?.roster_id === team1.roster_id ? 'text-green-400' : ''}`}>
+                  <div className={`text-lg font-bold mb-1 ${winner?.roster_id === team1.roster_id && areMatchupsComplete ? 'text-green-400' : ''}`}>
                     {team1.points.toFixed(2)}
                   </div>
-                  <div className={`text-lg font-bold ${winner?.roster_id === team2.roster_id ? 'text-green-400' : ''}`}>
+                  <div className={`text-lg font-bold ${winner?.roster_id === team2.roster_id && areMatchupsComplete ? 'text-green-400' : ''}`}>
                     {team2.points.toFixed(2)}
                   </div>
                 </div>

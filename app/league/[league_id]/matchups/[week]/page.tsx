@@ -17,7 +17,9 @@ export default function MatchupsPage() {
   const [rosters, setRosters] = useState<SleeperRoster[]>([])
   const [users, setUsers] = useState<SleeperUser[]>([])
   const [matchups, setMatchups] = useState<SleeperMatchup[]>([])
+  const [players, setPlayers] = useState<Record<string, any>>({})
   const [currentWeek, setCurrentWeek] = useState(week)
+  const [nflCurrentWeek, setNflCurrentWeek] = useState<number>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -26,21 +28,29 @@ export default function MatchupsPage() {
       try {
         setLoading(true)
         
-        const [nflState, leagueInfo, leagueRosters, leagueUsers, weekMatchups] = await Promise.all([
+        const [nflState, leagueInfo, leagueRosters, leagueUsers, weekMatchups, nflPlayers] = await Promise.all([
           SleeperAPI.getNFLState(),
           SleeperAPI.getLeague(leagueId),
           SleeperAPI.getLeagueRosters(leagueId),
           SleeperAPI.getLeagueUsers(leagueId),
-          SleeperAPI.getMatchups(leagueId, week)
+          SleeperAPI.getMatchups(leagueId, week),
+          SleeperAPI.getNFLPlayers()
         ])
         
-        if (nflState && !week) {
-          setCurrentWeek(nflState.week)
+        if (nflState) {
+          setNflCurrentWeek(nflState.week)
+          if (!week) {
+            setCurrentWeek(nflState.week)
+          }
         }
         
         setRosters(leagueRosters)
         setUsers(leagueUsers)
         setMatchups(weekMatchups)
+        
+        if (nflPlayers) {
+          setPlayers(nflPlayers)
+        }
         
         // Set league info from API response
         if (leagueInfo) {
@@ -131,6 +141,9 @@ export default function MatchupsPage() {
           rosters={rosters}
           users={users}
           week={week}
+          league={league}
+          players={players}
+          currentWeek={nflCurrentWeek}
           onMatchupClick={handleMatchupClick}
         />
       </div>

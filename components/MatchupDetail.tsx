@@ -1,7 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { SleeperMatchup, SleeperRoster, SleeperUser } from '@/types/sleeper'
+import { SleeperMatchup, SleeperRoster, SleeperUser, SleeperLeague } from '@/types/sleeper'
+import { createBestBallMatchup, isBestBallLeague } from '@/lib/best-ball'
 
 interface MatchupDetailProps {
   matchups: SleeperMatchup[]
@@ -10,11 +11,18 @@ interface MatchupDetailProps {
   matchupId: number
   week: number
   players: Record<string, any>
+  league: SleeperLeague | null
+  currentWeek?: number
   onBack: () => void
 }
 
-export default function MatchupDetail({ matchups, rosters, users, matchupId, week, players, onBack }: MatchupDetailProps) {
-  const matchupTeams = matchups.filter(m => m.matchup_id === matchupId)
+export default function MatchupDetail({ matchups, rosters, users, matchupId, week, players, league, currentWeek, onBack }: MatchupDetailProps) {
+  // Apply best ball logic if this is a best ball league
+  const processedMatchups = matchups.map(matchup => 
+    createBestBallMatchup(matchup, players, league)
+  )
+  
+  const matchupTeams = processedMatchups.filter(m => m.matchup_id === matchupId)
   
   const getUserByRosterId = (rosterId: number) => {
     const roster = rosters.find(r => r.roster_id === rosterId)
@@ -41,8 +49,13 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
   const user1 = getUserByRosterId(team1.roster_id)
   const user2 = team2 ? getUserByRosterId(team2.roster_id) : null
 
+  // Determine if the matchup is completed
+  // A matchup is considered complete if it's from a past week, or if it has a clear winner with different points
+  const isMatchupComplete = currentWeek ? week < currentWeek : (team1.points !== team2?.points && (team1.points > 0 || team2?.points > 0))
+
   const renderPlayerPoints = (matchup: SleeperMatchup) => {
     const starterIds = new Set(matchup.starters)
+    const isBestBall = isBestBallLeague(league)
     
     const renderPlayer = (playerId: string, points: number, isStarter: boolean = false) => {
       const player = players[playerId]
@@ -92,7 +105,10 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
     return (
       <div className="space-y-3">
         <div>
-          <h4 className="font-semibold text-sm text-gray-300 mb-3">Starters</h4>
+          <h4 className="font-semibold text-sm text-gray-300 mb-3 flex items-center gap-2">
+            {isBestBall ? 'Best Ball Lineup' : 'Starters'}
+            {isBestBall && <span className="text-xs bg-blue-600 px-2 py-1 rounded">AUTO</span>}
+          </h4>
           <div className="space-y-2">
             {matchup.starters.map((playerId, index) => 
               <div key={`starter-${playerId}-${index}`}>
@@ -203,7 +219,7 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
             <p className={`text-3xl font-bold ${winner?.roster_id === team1.roster_id ? 'text-green-400' : ''}`}>
               {team1.points.toFixed(2)}
             </p>
-            {winner?.roster_id === team1.roster_id && (
+            {winner?.roster_id === team1.roster_id && isMatchupComplete && (
               <p className="text-green-400 font-medium">WINNER</p>
             )}
           </div>
@@ -237,7 +253,7 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
             <p className={`text-3xl font-bold ${winner?.roster_id === team2.roster_id ? 'text-green-400' : ''}`}>
               {team2.points.toFixed(2)}
             </p>
-            {winner?.roster_id === team2.roster_id && (
+            {winner?.roster_id === team2.roster_id && isMatchupComplete && (
               <p className="text-green-400 font-medium">WINNER</p>
             )}
           </div>

@@ -17,6 +17,8 @@ export default function MatchupDetailPage() {
   const [users, setUsers] = useState<SleeperUser[]>([])
   const [matchups, setMatchups] = useState<SleeperMatchup[]>([])
   const [players, setPlayers] = useState<Record<string, any>>({})
+  const [league, setLeague] = useState<SleeperLeague | null>(null)
+  const [currentWeek, setCurrentWeek] = useState<number>()
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -25,16 +27,23 @@ export default function MatchupDetailPage() {
       try {
         setLoading(true)
         
-        const [leagueRosters, leagueUsers, weekMatchups, nflPlayers] = await Promise.all([
+        const [nflState, leagueInfo, leagueRosters, leagueUsers, weekMatchups, nflPlayers] = await Promise.all([
+          SleeperAPI.getNFLState(),
+          SleeperAPI.getLeague(leagueId),
           SleeperAPI.getLeagueRosters(leagueId),
           SleeperAPI.getLeagueUsers(leagueId),
           SleeperAPI.getMatchups(leagueId, week),
           SleeperAPI.getNFLPlayers()
         ])
         
+        if (nflState) {
+          setCurrentWeek(nflState.week)
+        }
+        
         setRosters(leagueRosters)
         setUsers(leagueUsers)
         setMatchups(weekMatchups)
+        setLeague(leagueInfo)
         
         if (nflPlayers) {
           setPlayers(nflPlayers)
@@ -94,6 +103,8 @@ export default function MatchupDetailPage() {
           matchupId={matchupId}
           week={week}
           players={players}
+          league={league}
+          currentWeek={currentWeek}
           onBack={handleBack}
         />
       </div>
