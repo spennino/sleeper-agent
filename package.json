@@ -1,7 +1,19 @@
 {
   "name": "sleeper-agent",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "license": "MIT",
+  "author": "Sean Pennino",
+  "description": "A beautiful dark-mode fantasy football dashboard built with Next.js for Sleeper leagues",
+  "keywords": ["fantasy-football", "sleeper", "dashboard", "nextjs", "react", "typescript"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spennino/sleeper-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/spennino/sleeper-agent/issues"
+  },
+  "homepage": "https://github.com/spennino/sleeper-agent#readme",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
