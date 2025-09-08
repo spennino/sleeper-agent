@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { useEffect, useState } from 'react'
 import { SleeperMatchup, SleeperRoster, SleeperUser, SleeperLeague } from '@/types/sleeper'
 import { createBestBallMatchup, isBestBallLeague } from '@/lib/best-ball'
 
@@ -17,11 +18,30 @@ interface MatchupDetailProps {
 }
 
 export default function MatchupDetail({ matchups, rosters, users, matchupId, week, players, league, currentWeek, onBack }: MatchupDetailProps) {
+  const [liveTeams, setLiveTeams] = useState<Set<string>>(new Set())
+
+  useEffect(() => {
+    const loadLiveTeams = async () => {
+      try {
+        const res = await fetch('/api/live-teams')
+        if (!res.ok) return
+        const data = await res.json()
+        setLiveTeams(new Set<string>(data.teams || []))
+      } catch (err) {
+        console.error('Failed to fetch live teams', err)
+      }
+    }
+
+    loadLiveTeams()
+    const interval = setInterval(loadLiveTeams, 60000)
+    return () => clearInterval(interval)
+  }, [])
+
   // Apply best ball logic if this is a best ball league
-  const processedMatchups = matchups.map(matchup => 
+  const processedMatchups = matchups.map(matchup =>
     createBestBallMatchup(matchup, players, league)
   )
-  
+
   const matchupTeams = processedMatchups.filter(m => m.matchup_id === matchupId)
   
   const getUserByRosterId = (rosterId: number) => {
@@ -89,6 +109,12 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
               </div>
               <div className="text-xs text-gray-400">
                 {player.position} • {player.team || 'FA'}
+                {player.team && liveTeams.has(player.team) && (
+                  <span className="ml-2 inline-flex items-center text-green-400">
+                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-1" />
+                    LIVE
+                  </span>
+                )}
                 {player.injury_status && player.injury_status !== 'Healthy' && (
                   <span className="text-red-400 ml-1">({player.injury_status})</span>
                 )}
