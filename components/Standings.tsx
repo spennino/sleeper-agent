@@ -61,14 +61,15 @@ export default function Standings({ rosters, users, players }: StandingsProps) {
             <tbody className="divide-y divide-gray-700">
               {sortedRosters.map((roster, index) => {
                 const user = getUserByOwnerId(roster.owner_id)
+                const avatar = user?.metadata?.avatar || user?.avatar
                 const totalGames = roster.settings.wins + roster.settings.losses + roster.settings.ties
                 const winPct = totalGames > 0 ? (roster.settings.wins / totalGames * 100).toFixed(1) : '0.0'
                 const pointsFor = ((roster.settings.fpts || 0) + ((roster.settings.fpts_decimal || 0) / 100)).toFixed(2)
                 const pointsAgainst = ((roster.settings.fpts_against || 0) + ((roster.settings.fpts_against_decimal || 0) / 100)).toFixed(2)
-                
+
                 return (
-                  <tr 
-                    key={roster.roster_id} 
+                  <tr
+                    key={roster.roster_id}
                     onClick={() => handleRowClick(roster)}
                     className={`hover:bg-gray-750 cursor-pointer transition-colors ${
                       selectedRoster?.roster_id === roster.roster_id ? 'bg-blue-900' : ''
@@ -77,10 +78,10 @@ export default function Standings({ rosters, users, players }: StandingsProps) {
                     <td className="px-4 py-3 text-sm font-medium">{index + 1}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center">
-                        {user?.avatar && (
+                        {avatar && (
                           <Image
-                            src={`https://sleepercdn.com/avatars/${user.avatar}`}
-                            alt={user.display_name || user.username || 'User'}
+                            src={`https://sleepercdn.com/avatars/${avatar}`}
+                            alt={user?.display_name || user?.username || 'User'}
                             width={32}
                             height={32}
                             className="w-8 h-8 rounded-full mr-3"
@@ -88,9 +89,9 @@ export default function Standings({ rosters, users, players }: StandingsProps) {
                         )}
                         <div>
                           <div className="text-sm font-medium">
-                            {(user as any)?.metadata?.team_name || user?.display_name || user?.username || 'Unknown'}
+                            {user?.metadata?.team_name || user?.display_name || user?.username || 'Unknown'}
                           </div>
-                          {(user as any)?.metadata?.team_name && (
+                          {user?.metadata?.team_name && (
                             <div className="text-xs text-gray-400">
                               {user?.display_name || user?.username}
                             </div>

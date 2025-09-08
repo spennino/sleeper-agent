@@ -63,14 +63,15 @@ export default function Matchups({ matchups, rosters, users, week, league, playe
           
           if (!team2) {
             const user1 = getUserByRosterId(team1.roster_id)
+            const avatar1 = user1?.metadata?.avatar || user1?.avatar
             return (
               <div key={index} className="bg-gray-800 rounded-lg p-4">
                 <div className="text-center">
                   <div className="flex items-center justify-center mb-2">
-                    {user1?.avatar && (
+                    {avatar1 && (
                       <Image
-                        src={`https://sleepercdn.com/avatars/${user1.avatar}`}
-                        alt={user1.display_name || user1.username || 'User'}
+                        src={`https://sleepercdn.com/avatars/${avatar1}`}
+                        alt={user1?.display_name || user1?.username || 'User'}
                         width={32}
                         height={32}
                         className="w-8 h-8 rounded-full mr-3"
@@ -78,9 +79,9 @@ export default function Matchups({ matchups, rosters, users, week, league, playe
                     )}
                     <div>
                       <div className="font-medium">
-                        {(user1 as any)?.metadata?.team_name || user1?.display_name || user1?.username || 'Unknown'}
+                        {user1?.metadata?.team_name || user1?.display_name || user1?.username || 'Unknown'}
                       </div>
-                      {(user1 as any)?.metadata?.team_name && (
+                      {user1?.metadata?.team_name && (
                         <div className="text-xs text-gray-400">
                           {user1?.display_name || user1?.username}
                         </div>
@@ -96,6 +97,8 @@ export default function Matchups({ matchups, rosters, users, week, league, playe
 
           const user1 = getUserByRosterId(team1.roster_id)
           const user2 = getUserByRosterId(team2.roster_id)
+          const avatar1 = user1?.metadata?.avatar || user1?.avatar
+          const avatar2 = user2?.metadata?.avatar || user2?.avatar
           const winner = team1.points > team2.points ? team1 : team2.points > team1.points ? team2 : null
 
           return (
@@ -107,10 +110,10 @@ export default function Matchups({ matchups, rosters, users, week, league, playe
               <div className="flex justify-between items-center">
                 <div className="flex-1">
                   <div className={`flex items-center mb-2 ${winner?.roster_id === team1.roster_id && areMatchupsComplete ? 'text-green-400' : ''}`}>
-                    {user1?.avatar && (
+                    {avatar1 && (
                       <Image
-                        src={`https://sleepercdn.com/avatars/${user1.avatar}`}
-                        alt={user1.display_name || user1.username || 'User'}
+                        src={`https://sleepercdn.com/avatars/${avatar1}`}
+                        alt={user1?.display_name || user1?.username || 'User'}
                         width={32}
                         height={32}
                         className="w-8 h-8 rounded-full mr-3"
@@ -118,9 +121,9 @@ export default function Matchups({ matchups, rosters, users, week, league, playe
                     )}
                     <div>
                       <div className="font-medium">
-                        {(user1 as any)?.metadata?.team_name || user1?.display_name || user1?.username || 'Unknown'}
+                        {user1?.metadata?.team_name || user1?.display_name || user1?.username || 'Unknown'}
                       </div>
-                      {(user1 as any)?.metadata?.team_name && (
+                      {user1?.metadata?.team_name && (
                         <div className="text-xs text-gray-400">
                           {user1?.display_name || user1?.username}
                         </div>
@@ -128,10 +131,10 @@ export default function Matchups({ matchups, rosters, users, week, league, playe
                     </div>
                   </div>
                   <div className={`flex items-center ${winner?.roster_id === team2.roster_id && areMatchupsComplete ? 'text-green-400' : ''}`}>
-                    {user2?.avatar && (
+                    {avatar2 && (
                       <Image
-                        src={`https://sleepercdn.com/avatars/${user2.avatar}`}
-                        alt={user2.display_name || user2.username || 'User'}
+                        src={`https://sleepercdn.com/avatars/${avatar2}`}
+                        alt={user2?.display_name || user2?.username || 'User'}
                         width={32}
                         height={32}
                         className="w-8 h-8 rounded-full mr-3"
@@ -139,9 +142,9 @@ export default function Matchups({ matchups, rosters, users, week, league, playe
                     )}
                     <div>
                       <div className="font-medium">
-                        {(user2 as any)?.metadata?.team_name || user2?.display_name || user2?.username || 'Unknown'}
+                        {user2?.metadata?.team_name || user2?.display_name || user2?.username || 'Unknown'}
                       </div>
-                      {(user2 as any)?.metadata?.team_name && (
+                      {user2?.metadata?.team_name && (
                         <div className="text-xs text-gray-400">
                           {user2?.display_name || user2?.username}
                         </div>

@@ -88,15 +88,16 @@ export default function RosterView({ roster, user, players, onClose }: RosterVie
   }
 
   const { startersByPosition, bench } = getPlayersByPosition()
+  const avatar = user?.metadata?.avatar || user?.avatar
 
   return (
     <div className="bg-gray-800 rounded-lg p-6 h-full overflow-y-auto">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="flex items-center">
-          {user?.avatar && (
+          {avatar && (
             <Image
-              src={`https://sleepercdn.com/avatars/${user.avatar}`}
+              src={`https://sleepercdn.com/avatars/${avatar}`}
               alt={user.display_name || user.username || 'User'}
               width={40}
               height={40}
@@ -105,9 +106,9 @@ export default function RosterView({ roster, user, players, onClose }: RosterVie
           )}
           <div>
             <h3 className="text-lg font-semibold">
-              {(user as any)?.metadata?.team_name || user?.display_name || user?.username || 'Unknown'}
+              {user?.metadata?.team_name || user?.display_name || user?.username || 'Unknown'}
             </h3>
-            {(user as any)?.metadata?.team_name && (
+            {user?.metadata?.team_name && (
               <div className="text-sm text-gray-400">
                 {user?.display_name || user?.username}
               </div>
