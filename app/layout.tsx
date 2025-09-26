@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/react'
+import Footer from '../components/Footer'
 import './globals.css'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -20,8 +21,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.className} bg-gray-900 text-white`}>
-        {children}
+      <body className={`${inter.className} bg-gray-900 text-white min-h-screen flex flex-col`}>
+        <div className="flex-1">
+          {children}
+        </div>
+        <Footer />
         <Analytics />
       </body>
     </html>
