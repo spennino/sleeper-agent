@@ -1,26 +1,31 @@
 import { SleeperMatchup, SleeperPlayer, SleeperLeague } from '@/types/sleeper'
 
-// Standard lineup positions for best ball format
-// Typically: 1 QB, 2 RB, 3 WR, 1 TE, 1 FLEX (RB/WR/TE), 1 K, 1 DEF
-const BEST_BALL_LINEUP_POSITIONS = [
-  { position: 'QB', count: 1 },
-  { position: 'RB', count: 2 },
-  { position: 'WR', count: 3 },
-  { position: 'TE', count: 1 },
-  { position: 'FLEX', count: 1 }, // RB/WR/TE
-  { position: 'K', count: 1 },
-  { position: 'DEF', count: 1 }
-]
+// Convert roster positions array to position requirements
+function getRosterPositionRequirements(rosterPositions: string[]): { position: string, count: number }[] {
+  const positionCounts: Record<string, number> = {}
+
+  // Count each position type
+  for (const position of rosterPositions) {
+    positionCounts[position] = (positionCounts[position] || 0) + 1
+  }
+
+  // Convert to array format
+  return Object.entries(positionCounts).map(([position, count]) => ({
+    position,
+    count
+  }))
+}
 
 export function isBestBallLeague(league: SleeperLeague | null): boolean {
   return league?.settings?.best_ball === 1
 }
 
 export function calculateBestBallLineup(
-  matchup: SleeperMatchup, 
-  players: Record<string, any>
+  matchup: SleeperMatchup,
+  players: Record<string, any>,
+  league: SleeperLeague | null
 ): { starters: string[], startersPoints: number[], totalPoints: number } {
-  if (!matchup.players || !matchup.players_points) {
+  if (!matchup.players || !matchup.players_points || !league?.roster_positions) {
     return { starters: [], startersPoints: [], totalPoints: 0 }
   }
 
@@ -44,8 +49,11 @@ export function calculateBestBallLineup(
   const selectedPoints: number[] = []
   const usedPlayers = new Set<string>()
 
+  // Get position requirements from the actual league roster positions
+  const positionRequirements = getRosterPositionRequirements(league.roster_positions)
+
   // Fill each position requirement
-  for (const positionReq of BEST_BALL_LINEUP_POSITIONS) {
+  for (const positionReq of positionRequirements) {
     let filled = 0
     
     for (const playerData of playersWithPoints) {
@@ -89,7 +97,7 @@ export function createBestBallMatchup(originalMatchup: SleeperMatchup, players: 
     return originalMatchup
   }
 
-  const bestBallResult = calculateBestBallLineup(originalMatchup, players)
+  const bestBallResult = calculateBestBallLineup(originalMatchup, players, league)
   
   return {
     ...originalMatchup,
