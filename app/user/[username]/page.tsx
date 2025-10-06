@@ -11,7 +11,7 @@ export default function UserPage() {
   const params = useParams()
   const router = useRouter()
   const username = params.username as string
-  
+
   const [user, setUser] = useState<SleeperUser | null>(null)
   const [leagues, setLeagues] = useState<SleeperLeague[]>([])
   const [currentSeason, setCurrentSeason] = useState('2025')
@@ -22,26 +22,26 @@ export default function UserPage() {
     const loadUserData = async () => {
       try {
         setLoading(true)
-        
+
         const [nflState, userData] = await Promise.all([
           SleeperAPI.getNFLState(),
           SleeperAPI.getUser(username)
         ])
-        
+
         if (nflState) {
           setCurrentSeason(nflState.season)
         }
-        
+
         if (!userData) {
           setError('User not found')
           return
         }
-        
+
         setUser(userData)
-        
+
         const userLeagues = await SleeperAPI.getUserLeagues(userData.user_id, nflState?.season || '2025')
         setLeagues(userLeagues)
-        
+
         // If only one league, redirect directly to it
         if (userLeagues.length === 1) {
           router.push(`/league/${userLeagues[0].league_id}`)
@@ -52,7 +52,7 @@ export default function UserPage() {
         setLoading(false)
       }
     }
-    
+
     if (username) {
       loadUserData()
     }
@@ -99,7 +99,10 @@ export default function UserPage() {
           </h1>
           <div className="text-sm text-gray-400">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => {
+                localStorage.removeItem('sleeper_username')
+                router.push('/')
+              }}
               className="text-blue-400 hover:text-blue-300 underline"
             >
               Change user

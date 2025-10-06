@@ -18,6 +18,7 @@ export interface SleeperLeague {
   sport: string
   season_type: string
   total_rosters: number
+  avatar?: string
   settings: {
     max_keepers: number
     draft_rounds: number

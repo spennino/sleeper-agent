@@ -134,6 +134,15 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
       ]
       const uniqueByeWeeks = Array.from(new Set(byeWeeks))
       const isOnBye = uniqueByeWeeks.includes(week)
+      const byeInfo = player?.bye_weeks ?? player?.bye_week
+      const parsedByeWeeks: number[] = Array.isArray(byeInfo)
+        ? byeInfo
+        : typeof byeInfo === 'string'
+          ? [parseInt(byeInfo, 10)].filter(weekValue => !Number.isNaN(weekValue))
+          : typeof byeInfo === 'number'
+            ? [byeInfo]
+            : []
+      const isOnBye = parsedByeWeeks.includes(week)
 
       const metadataItems: ReactNode[] = []
 

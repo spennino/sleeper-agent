@@ -119,12 +119,21 @@ export default function MatchupsPage() {
             <h1 className="text-3xl font-bold">{league?.name || 'Loading...'}</h1>
             <p className="text-gray-400">Season {league?.season || '2025'}</p>
           </div>
-          <div className="text-sm text-gray-400">
+          <div className="text-sm text-gray-400 space-x-4">
             <button
               onClick={() => router.push('/')}
               className="text-blue-400 hover:text-blue-300 underline"
             >
               Change League
+            </button>
+            <button
+              onClick={() => {
+                localStorage.removeItem('sleeper_username')
+                router.push('/')
+              }}
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              Change User
             </button>
           </div>
         </div>
