@@ -86,6 +86,31 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
   // A matchup is considered complete if it's from a past week, or if it has a clear winner with different points
   const isMatchupComplete = currentWeek ? week < currentWeek : (team1.points !== team2?.points && (team1.points > 0 || team2?.points > 0))
 
+  const parseByeWeeks = (byeData: unknown): number[] => {
+    if (!byeData) {
+      return []
+    }
+
+    if (Array.isArray(byeData)) {
+      return byeData.flatMap(value => parseByeWeeks(value))
+    }
+
+    if (typeof byeData === 'number') {
+      return Number.isFinite(byeData) ? [byeData] : []
+    }
+
+    if (typeof byeData === 'string') {
+      const parsed = parseInt(byeData, 10)
+      return Number.isNaN(parsed) ? [] : [parsed]
+    }
+
+    if (typeof byeData === 'object') {
+      return Object.values(byeData as Record<string, unknown>).flatMap(value => parseByeWeeks(value))
+    }
+
+    return []
+  }
+
   const renderPlayerPoints = (matchup: SleeperMatchup) => {
     const starterIds = new Set(matchup.starters)
     const isBestBall = isBestBallLeague(league)
@@ -103,6 +128,12 @@ export default function MatchupDetail({ matchups, rosters, users, matchupId, wee
       const player = players[playerId]
       const isOnRoster = rosterPlayers?.has(playerId) ?? false
 
+      const byeWeeks = [
+        ...parseByeWeeks(player?.bye_weeks),
+        ...parseByeWeeks(player?.bye_week)
+      ]
+      const uniqueByeWeeks = Array.from(new Set(byeWeeks))
+      const isOnBye = uniqueByeWeeks.includes(week)
       const byeInfo = player?.bye_weeks ?? player?.bye_week
       const parsedByeWeeks: number[] = Array.isArray(byeInfo)
         ? byeInfo
